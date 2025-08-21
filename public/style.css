@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #f0f0f0; /* 배경 색은 테스트용 */
+}
+
+#pet {
+  position: absolute;
+  top: 200px;
+  left: 200px;
+  font-size: 50px;
+  cursor: grab;
+  user-select: none;
+}
