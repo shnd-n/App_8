@@ -1,15 +1,14 @@
 body {
   margin: 0;
-  padding: 0;
   overflow: hidden;
-  background: #f0f0f0; /* 배경 색은 테스트용 */
+  height: 100vh;
+  background: #f0f0f0;
 }
 
 #pet {
   position: absolute;
-  top: 200px;
-  left: 200px;
-  font-size: 50px;
-  cursor: grab;
-  user-select: none;
+  bottom: 0;
+  left: 100px;
+  font-size: 40px;
+  transition: all 0.5s ease; /* 걷기, 점프 부드럽게 */
 }
