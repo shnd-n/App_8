@@ -6,12 +6,11 @@ body {
 }
 
 #pet {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 32px;   /* 프레임 크기 */
-  height: 32px;
-  background-image: url("images/pet_sprites.png"); /* 네 스프라이트 시트 */
-  background-repeat: no-repeat;
-  image-rendering: pixelated; /* 픽셀아트 깨끗하게 확대 */
+  width: 32px;               /* 프레임 가로 크기 */
+  height: 32px;              /* 프레임 세로 크기 */
+  background: url("images/pet_sprites.png") no-repeat;
+  image-rendering: pixelated; /* 픽셀 깨끗하게 확대 */
+  
+  transform: scale(4);       /* 2배 크기로 보이게 */
+  transform-origin: bottom left; /* 확대 기준을 발 밑에 맞춤 */
 }
