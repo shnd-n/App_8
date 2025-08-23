@@ -9,8 +9,9 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 256px;   /* 프레임 크기 */
-  height: 256px;
+  width: 32px;   /* 프레임 크기 */
+  height: 32px;
   background-image: url("images/pet_sprites.png"); /* 네 스프라이트 시트 */
   background-repeat: no-repeat;
+  image-rendering: pixelated; /* 픽셀아트 깨끗하게 확대 */
 }
