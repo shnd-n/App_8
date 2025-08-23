@@ -1,18 +1,16 @@
 body {
   margin: 0;
+  background: #e0f7fa; /* 배경색 예시 */
   overflow: hidden;
   height: 100vh;
-  background: #f0f0f0;
 }
 
 #pet {
   position: absolute;
   bottom: 0;
-  left: 100px;
-  width: 32px;   /* 프레임 크기 */
-  height: 32px;
-  background-image: url("images/pet_sprites.png");
+  left: 0;
+  width: 256px;   /* 프레임 크기 */
+  height: 256px;
+  background-image: url("images/pet_sprites.png"); /* 네 스프라이트 시트 */
   background-repeat: no-repeat;
-  image-rendering: pixelated; /* 픽셀감 유지 */
 }
-
