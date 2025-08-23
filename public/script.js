@@ -19,6 +19,12 @@ function walkTo(targetX) {
   animateSprite(0, 2, 32, 200); // 걷기 프레임
   const speed = 2;
 
+  if (targetX < posX) {
+    pet.style.transform = "scaleX(-1)"; // 왼쪽으로 이동 → 좌우 반전
+  } else {
+    pet.style.transform = "scaleX(1)";  // 오른쪽으로 이동 → 원래 방향
+  }
+
   if (moveInterval) clearInterval(moveInterval);
   moveInterval = setInterval(() => {
     if (Math.abs(posX - targetX) <= speed) {
