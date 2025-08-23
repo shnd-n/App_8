@@ -9,6 +9,10 @@ body {
   position: absolute;
   bottom: 0;
   left: 100px;
-  font-size: 40px;
-  transition: all 0.5s ease; /* 걷기, 점프 부드럽게 */
+  width: 32px;   /* 프레임 크기 */
+  height: 32px;
+  background-image: url("images/pet_sprites.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated; /* 픽셀감 유지 */
 }
+
