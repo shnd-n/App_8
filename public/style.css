@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #e0f7fa; /* 배경색 예시 */
+  background: #e0f7fa;
   overflow: hidden;
   height: 100vh;
 }
@@ -9,9 +9,38 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 32px;   /* 프레임 크기 */
+  width: 32px;
   height: 32px;
-  background-image: url("images/pet_sprites.png"); /* 네 스프라이트 시트 */
+  background-image: url("images/actions/walk.png"); /* ← 기본 스프라이트 */
   background-repeat: no-repeat;
-  image-rendering: pixelated; /* 픽셀아트 깨끗하게 확대 */
+  image-rendering: pixelated;
+}
+
+#controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+#controls button {
+  display: block;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#controls button:hover {
+  background-color: #e0f0ff;
+}
+
+#emoji-img {
+  width: 32px;  /* 원하는 크기로 조절 */
+  height: 32px;
+  transition: opacity 0.3s;
+  opacity: 0;
 }
