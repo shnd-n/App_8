@@ -3,6 +3,7 @@ const emojiImg = document.getElementById("emoji-img");
 const toggleBtn = document.getElementById("toggleInventory");
 const inventory = document.getElementById("inventory");
 const inventoryGrid = document.getElementById("inventoryGrid");
+const totalSlots = 16;        // 총 슬롯 수
 let emojiTimeout = null;
 let posX = 0; 
 let animInterval = null; 
@@ -122,6 +123,7 @@ toggleBtn.addEventListener("click", () => {
     inventory.style.display = "none";
   } else {
     inventory.style.display = "block";
+    renderInventory(); // 버튼 눌렀을 때 렌더링도 함께
   }
 });
 
@@ -145,27 +147,34 @@ function loadInventory() {
 // 인벤토리 렌더링
 function renderInventory() {
   inventoryGrid.innerHTML = ""; // 기존 UI 비우기
-  inventoryItems.forEach(itemSrc => {
+
+  for (let i = 0; i < totalSlots; i++) {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("item");
 
-    const img = document.createElement("img");
-    img.src = itemSrc;
+    if (inventoryItems[i]) {
+      // 아이템이 있으면 이미지 표시
+      const img = document.createElement("img");
+      img.src = inventoryItems[i];
+      img.title = "아이템"; // 필요하면 이름 표시
+      img.addEventListener("click", () => {
+        inventoryItems.splice(i, 1); // 클릭한 아이템 삭제
+        saveInventory();
+        renderInventory();
+      });
+      itemDiv.appendChild(img);
+    } else {
+      // 빈칸이면 CSS로 빈 칸 표시 (배경 등)
+      itemDiv.classList.add("empty");
+    }
 
-    itemDiv.addEventListener("click", () => {
-      inventoryItems.splice(index, 1);
-      saveInventory();
-      renderInventory();
-    });
-
-    itemDiv.appendChild(img);
     inventoryGrid.appendChild(itemDiv);
-  });
+  }
 }
 
 // 아이템 추가
 function addItemToInventory(itemSrc) {
-  if (inventoryItems.length >= 16) {
+  if (inventoryItems.length >= totalSlots) {
     alert("인벤토리가 가득 찼습니다!");
     return;
   }

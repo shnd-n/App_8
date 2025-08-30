@@ -61,7 +61,7 @@ body {
   position: absolute;
   top: 60px;
   right: 20px;
-  width: 200px;
+  width: 220px;
   padding: 10px;
   background: rgba(255,255,255,0.9);
   border: 2px solid #333;
@@ -70,36 +70,26 @@ body {
   display: none;
 }
 
-#inventory h3 {
-  margin: 0 0 10px 0;
-  font-size: 18px;
-  text-align: center;
-}
-
-.inventory-grid {
+#inventoryGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(4, 50px); /* 4x4 그리드 */
+  grid-gap: 5px;
 }
 
-.inventory-grid .item {
+.item {
   width: 50px;
   height: 50px;
-  background: #f0f0f0;
-  border-radius: 8px;
+  background: #ccc; /* 빈 칸 기본 배경 */
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.inventory-grid .item:hover {
-  transform: scale(1.1);
-  background: #e0e0e0;
+.item.empty {
+  background: #eff1cd; /* 빈칸 강조 색 */
 }
 
-.inventory-grid .item img {
-  max-width: 100%;
-  max-height: 100%;
+.item img {
+  width: 40px;
+  height: 40px;
 }
