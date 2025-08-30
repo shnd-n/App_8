@@ -1,5 +1,8 @@
 const pet = document.getElementById("pet");
 const emojiImg = document.getElementById("emoji-img");
+const toggleBtn = document.getElementById("toggleInventory");
+const inventory = document.getElementById("inventory");
+const inventoryGrid = document.getElementById("inventoryGrid");
 let emojiTimeout = null;
 let posX = 0; 
 let animInterval = null; 
@@ -113,6 +116,74 @@ function updateEmojiPosition() {
     requestAnimationFrame(updateEmojiPosition);
   }
 }
+
+toggleBtn.addEventListener("click", () => {
+  if (inventory.style.display === "block") {
+    inventory.style.display = "none";
+  } else {
+    inventory.style.display = "block";
+  }
+});
+
+// 인벤토리 데이터 (배열)
+let inventoryItems = [];
+
+// 저장 함수
+function saveInventory() {
+  localStorage.setItem("inventory", JSON.stringify(inventoryItems));
+}
+
+// 불러오기 함수
+function loadInventory() {
+  const data = localStorage.getItem("inventory");
+  if (data) {
+    inventoryItems = JSON.parse(data);
+    renderInventory();
+  }
+}
+
+// 인벤토리 렌더링
+function renderInventory() {
+  inventoryGrid.innerHTML = ""; // 기존 UI 비우기
+  inventoryItems.forEach(itemSrc => {
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("item");
+
+    const img = document.createElement("img");
+    img.src = itemSrc;
+
+    itemDiv.addEventListener("click", () => {
+      inventoryItems.splice(index, 1);
+      saveInventory();
+      renderInventory();
+    });
+
+    itemDiv.appendChild(img);
+    inventoryGrid.appendChild(itemDiv);
+  });
+}
+
+// 아이템 추가
+function addItemToInventory(itemSrc) {
+  if (inventoryItems.length >= 16) {
+    alert("인벤토리가 가득 찼습니다!");
+    return;
+  }
+  
+  inventoryItems.push(itemSrc);
+  saveInventory();
+  renderInventory();
+}
+
+// 예시: 펫이 사과를 먹음
+function petEatApple() {
+  addItemToInventory("images/items/apple.png");
+}
+
+// 페이지 로드 시 실행
+window.onload = () => {
+  loadInventory();
+};
 
 // 랜덤 동작
 function randomAction() {

@@ -44,3 +44,62 @@ body {
   transition: opacity 0.3s;
   opacity: 0;
 }
+
+#toggleInventory {
+  position: fixed; /* 화면에 고정 */
+  top: 10px;       /* 위에서 20px */
+  left: 60px;     /* 오른쪽에서 20px */
+  padding: 10px 15px;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+
+#inventory {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 200px;
+  padding: 10px;
+  background: rgba(255,255,255,0.9);
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: none;
+}
+
+#inventory h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.inventory-grid .item {
+  width: 50px;
+  height: 50px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.inventory-grid .item:hover {
+  transform: scale(1.1);
+  background: #e0e0e0;
+}
+
+.inventory-grid .item img {
+  max-width: 100%;
+  max-height: 100%;
+}
