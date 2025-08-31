@@ -90,6 +90,43 @@ body {
 }
 
 .item img {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
+}
+
+
+/* 툴팁 스타일 */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 110%; /* 아이템 위쪽에 표시 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.item:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+#gameArea {
+  position: relative;  /* 중요! */
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.world-item {
+  position: absolute;
+  width: 32px;
+  height: 32px;
 }

@@ -10,6 +10,11 @@ let animInterval = null;
 let moveInterval = null; 
 let facing = 1; 
 
+const itemPool = [
+  { name: "사과", description: "맛있는 빨간 사과", src: "images/items/apple.png" },
+  { name: "바나나", description: "노란 바나나", src: "images/items/banana.png" }
+];
+
 // 스프라이트 애니메이션 실행 (이미지 경로 포함)
 function animateSprite(imgPath, startFrame, endFrame, frameWidth, speed) {
   if (animInterval) clearInterval(animInterval);
@@ -146,47 +151,81 @@ function loadInventory() {
 
 // 인벤토리 렌더링
 function renderInventory() {
-  inventoryGrid.innerHTML = ""; // 기존 UI 비우기
-
+  inventoryGrid.innerHTML = "";
   for (let i = 0; i < totalSlots; i++) {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("item");
 
     if (inventoryItems[i]) {
-      // 아이템이 있으면 이미지 표시
+      const item = inventoryItems[i];
+
       const img = document.createElement("img");
-      img.src = inventoryItems[i];
-      img.title = "아이템"; // 필요하면 이름 표시
-      img.addEventListener("click", () => {
-        inventoryItems.splice(i, 1); // 클릭한 아이템 삭제
-        saveInventory();
-        renderInventory();
-      });
+      img.src = item.imgSrc;
+      img.alt = item.name;
+
+      // 툴팁 요소 추가
+      const tooltip = document.createElement("div");
+      tooltip.classList.add("tooltip");
+      tooltip.innerHTML = `<strong>${item.name}</strong><br>${item.description}`;
+
       itemDiv.appendChild(img);
+      itemDiv.appendChild(tooltip);
+
+      // **클릭 시 아이템 제거**
+      itemDiv.addEventListener("click", () => {
+        inventoryItems.splice(i, 1);  // 배열에서 제거
+        saveInventory();
+        renderInventory();             // 다시 렌더링
+      });
     } else {
-      // 빈칸이면 CSS로 빈 칸 표시 (배경 등)
       itemDiv.classList.add("empty");
     }
 
     inventoryGrid.appendChild(itemDiv);
   }
 }
+// 랜덤 아이템 뽑기
+function getRandomItem() {
+  const randomIndex = Math.floor(Math.random() * itemPool.length);
+  return itemPool[randomIndex];
+}
+
 
 // 아이템 추가
-function addItemToInventory(itemSrc) {
+function addItemToInventory(name, description, imgSrc) {
   if (inventoryItems.length >= totalSlots) {
     alert("인벤토리가 가득 찼습니다!");
     return;
   }
-  
-  inventoryItems.push(itemSrc);
+
+  inventoryItems.push({ name, description, imgSrc:imgSrc });
   saveInventory();
   renderInventory();
 }
 
-// 예시: 펫이 사과를 먹음
-function petEatApple() {
-  addItemToInventory("images/items/apple.png");
+function spawnRandomItem() {
+  const gameArea = document.getElementById("gameArea"); // 맵 영역 (div 필요)
+  
+  // 랜덤 아이템 선택
+  const randomItem = getRandomItem();
+
+  // DOM 생성
+  const item = document.createElement("img");
+  item.src = randomItem.src;
+  item.classList.add("world-item");
+
+  // 객체 속성 붙이기
+  item.dataset.name = randomItem.name;
+  item.dataset.description = randomItem.description;
+
+  // 화면 내 랜덤 위치 계산
+  const x = Math.random() * (window.innerWidth - 40);
+  const y = gameArea.clientHeight - 40;           // 바닥에 고정
+
+  item.style.left = `${x}px`;
+  item.style.top = `${y}px`;
+
+  gameArea.appendChild(item);
 }
 
 // 페이지 로드 시 실행
@@ -210,3 +249,32 @@ function randomAction() {
 }
 
 setInterval(randomAction, 4000);
+
+// 일정 시간마다 랜덤 아이템 생성
+setInterval(spawnRandomItem, 5000); // 5초마다
+
+function checkCollision() {
+  const petRect = pet.getBoundingClientRect();
+  const items = document.querySelectorAll(".world-item");
+
+  items.forEach(item => {
+    const itemRect = item.getBoundingClientRect();
+
+    // AABB 충돌 체크
+    if (
+      petRect.left < itemRect.right &&
+      petRect.right > itemRect.left &&
+      petRect.top < itemRect.bottom &&
+      petRect.bottom > itemRect.top
+    ) {
+      // 충돌 시 인벤토리에 추가
+      addItemToInventory(item.dataset.name, item.dataset.description, item.src); // 기존 addItemToInventory 사용
+      item.remove(); // 화면에서 제거
+    }
+  });
+}
+
+// 일정 간격마다 충돌 체크
+setInterval(checkCollision, 50);
+
+
