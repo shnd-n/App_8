@@ -58,7 +58,7 @@ body {
 }
 
 #inventory {
-  position: absolute;
+  position: absolute; /* 반드시 absolute/fixed 이어야 함 */
   top: 60px;
   right: 20px;
   width: 220px;
@@ -68,6 +68,7 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   display: none;
+  cursor: move; /* 마우스로 끌 수 있음을 표시 */
 }
 
 #inventoryGrid {
@@ -100,8 +101,8 @@ body {
   visibility: hidden;
   opacity: 0;
   position: absolute;
-  bottom: 110%; /* 아이템 위쪽에 표시 */
-  left: 50%;
+  bottom: 80%; /* 아이템 위쪽에 표시 */
+  left: 60%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.85);
   color: #fff;
