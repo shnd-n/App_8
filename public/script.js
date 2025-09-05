@@ -10,6 +10,13 @@ let animInterval = null;
 let moveInterval = null; 
 let facing = 1; 
 let currentAction = "idle"; // 현재 펫 상태: idle, walk, sit, jump, ex_mark 등
+let actionTimeout = null;
+
+function stopAllActions() {
+  if (animInterval) { clearInterval(animInterval); animInterval = null; }
+  if (moveInterval) { clearInterval(moveInterval); moveInterval = null; }
+  if (actionTimeout) { clearTimeout(actionTimeout); actionTimeout = null; }
+}
 
 const itemPool = [
   { name: "사과", description: "맛있는 빨간 사과", src: "images/items/apple.png" },
@@ -80,14 +87,15 @@ function sit() {
   if (currentAction !== "idle") return;
   currentAction = "sit";
 
-  if (animInterval) clearInterval(animInterval);
+  stopAllActions(); // 이전 액션의 인터벌/타임아웃 정리
   animateSprite("images/actions/sit.png", 0, 2, 32, 300, false);
 
-  setTimeout(() => {
-    if (animInterval) clearInterval(animInterval);
+  actionTimeout = setTimeout(() => {
+    if (animInterval) { clearInterval(animInterval); animInterval = null; }
     pet.style.backgroundImage = "url(images/actions/idle.png)";
     pet.style.backgroundPosition = "0 0";
     currentAction = "idle";
+    actionTimeout = null;
   }, 2000 + Math.random() * 2000);
 }
 
@@ -96,38 +104,45 @@ function jump() {
   if (currentAction !== "idle") return;
   currentAction = "jump";
 
-  if (animInterval) clearInterval(animInterval);
+  stopAllActions();
   animateSprite("images/actions/jump.png", 0, 2, 32, 150, false);
 
   pet.style.transition = "transform 0.5s";
   pet.style.transform = `scaleX(${facing}) translateY(-80px)`;
 
-  setTimeout(() => {
+  actionTimeout = setTimeout(() => {
     pet.style.transform = `scaleX(${facing}) translateY(0)`;
-    if (animInterval) clearInterval(animInterval);
+    if (animInterval) { clearInterval(animInterval); animInterval = null; }
     pet.style.backgroundImage = "url(images/actions/idle.png)";
     pet.style.backgroundPosition = "0 0";
     currentAction = "idle";
+    actionTimeout = null;
   }, 500);
 }
+
 
 // === 느낌표 ===
 function ex_mark() {
-  if (animInterval) clearInterval(animInterval);
-  if (moveInterval) clearInterval(moveInterval);
+  if (currentAction === "ex_mark") return; // 이미 실행 중이면 무시
 
-  animateSprite("images/actions/ex_mark.png", 0, 2, 32, 150);
+  // 진행 중인 어떤 행동이든 즉시 중단
+  stopAllActions();
+  currentAction = "ex_mark";
+
+  animateSprite("images/actions/ex_mark.png", 0, 2, 32, 150); // 루프는 clear로 정리
   pet.style.transition = "transform 0.5s";
   pet.style.transform = `scaleX(${facing}) translateY(-80px)`;
 
-  setTimeout(() => {
+  actionTimeout = setTimeout(() => {
     pet.style.transform = `scaleX(${facing}) translateY(0)`;
-    if (animInterval) clearInterval(animInterval);
+    if (animInterval) { clearInterval(animInterval); animInterval = null; }
     pet.style.backgroundImage = "url(images/actions/idle.png)";
     pet.style.backgroundPosition = "0 0";
     currentAction = "idle";
+    actionTimeout = null;
   }, 500);
 }
+
 
 // 이모지 표시 함수
 function showEmojiImage(src, duration = 1000) {
@@ -195,12 +210,20 @@ function renderInventory() {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("item");
 
-    if (inventoryItems[i]) {
-      const item = inventoryItems[i];
-
+    const item = inventoryItems[i];
+    if (item) {
       const img = document.createElement("img");
       img.src = item.imgSrc;
       img.alt = item.name;
+
+      // 드래그 가능하게 설정
+      img.draggable = true;
+      img.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("application/json", JSON.stringify(item));
+      });
+
+      // 아이템 클릭 시 인벤토리 드래그 막기
+      img.addEventListener("mousedown", (e) => e.stopPropagation());
 
       // 툴팁 요소 추가
       const tooltip = document.createElement("div");
@@ -210,12 +233,12 @@ function renderInventory() {
       itemDiv.appendChild(img);
       itemDiv.appendChild(tooltip);
 
-      // **클릭 시 아이템 제거**
+      // **우클릭으로 아이템 삭제 (id 기준)**
       itemDiv.addEventListener("contextmenu", (e) => {
         e.preventDefault(); // 기본 우클릭 메뉴 방지
-        inventoryItems.splice(i, 1);  // 배열에서 제거
+        inventoryItems = inventoryItems.filter(it => it.id !== item.id);
         saveInventory();
-        renderInventory();             // 다시 렌더링
+        renderInventory();
       });
     } else {
       itemDiv.classList.add("empty");
@@ -238,10 +261,49 @@ function addItemToInventory(name, description, imgSrc) {
     return;
   }
 
-  inventoryItems.push({ name, description, imgSrc:imgSrc });
+  const newItem = {
+    id: Date.now() + Math.random().toString(16).slice(2), // 고유 id
+    name,
+    description,
+    imgSrc
+  };
+
+  inventoryItems.push(newItem);
   saveInventory();
   renderInventory();
 }
+
+// === 펫 먹이기 ===
+function feedPet(item) {
+  // 인벤토리에서 제거
+  inventoryItems = inventoryItems.filter(it => it.id !== item.id);
+  saveInventory();
+  renderInventory();
+
+  // 먹는 애니메이션 (eat.png 필요)
+  animateSprite("images/actions/eat.png", 0, 2, 32, 200, false);
+
+  // 하트 이모지 표시
+  showEmojiImage("images/icons/heart.png", 1000);
+
+  // 일정 시간 후 idle로 복귀
+  setTimeout(() => {
+    pet.style.backgroundImage = "url(images/actions/idle.png)";
+    pet.style.backgroundPosition = "0 0";
+    currentAction = "idle";
+  }, 1500);
+}
+
+// === 드래그 앤 드롭: 펫이 드롭 영역 ===
+pet.addEventListener("dragover", (e) => {
+  e.preventDefault(); // 드롭 허용
+});
+
+pet.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const data = JSON.parse(e.dataTransfer.getData("application/json"));
+  feedPet(data);
+});
 
 function spawnRandomItem() {
   const gameArea = document.getElementById("gameArea"); // 맵 영역 (div 필요)
@@ -324,7 +386,7 @@ function randomAction() {
 setTimeout(randomAction, 2000);
 
 // 일정 시간마다 랜덤 아이템 생성
-setInterval(spawnRandomItem, 5000); // 5초마다
+setInterval(spawnRandomItem, 100000); // 100초마다
 
 function checkCollision() {
   const petRect = pet.getBoundingClientRect();
@@ -357,6 +419,10 @@ let offsetX = 0;
 let offsetY = 0;
 
 inventory.addEventListener("mousedown", (e) => {
+  
+  // 아이템 클릭 시는 무시
+  if (e.target.tagName.toLowerCase() === "img") return;
+
   isDragging = true;
   offsetX = e.clientX - inventory.offsetLeft;
   offsetY = e.clientY - inventory.offsetTop;
